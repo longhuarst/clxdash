@@ -54,5 +54,25 @@ public class DeviceController {
 
 
 
+//
+//    //发布消息
+//    @RequestMapping("publish")
+//    String publish(@RequestParam String uuid, @RequestParam String topic,@RequestParam String msg){
+//
+//
+//        //插入到数据库中去
+//
+//        deviceRespository.save();
+//
+//
+//        return "success";
+//    }
+//
+
+
+
+
+
+
 
 }
