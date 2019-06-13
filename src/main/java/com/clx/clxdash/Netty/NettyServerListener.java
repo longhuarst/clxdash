@@ -9,14 +9,18 @@ import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.codec.LengthFieldBasedFrameDecoder;
 import io.netty.handler.codec.LengthFieldPrepender;
+import io.netty.handler.codec.LineBasedFrameDecoder;
+import io.netty.handler.codec.string.StringDecoder;
 import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
+import io.netty.handler.timeout.IdleStateHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PreDestroy;
 import javax.annotation.Resource;
+import java.util.concurrent.TimeUnit;
 
 @Component
 public class NettyServerListener {
@@ -43,13 +47,13 @@ public class NettyServerListener {
 
 
     //通道适配器
-    @Resource
-    private ServerChannelHandlerAdapter channelHandlerAdapter;
+//    @Resource
+//    private ServerChannelHandlerAdapter channelHandlerAdapter;
 
 
 
     //netty 服务器配置类
-    @Resource NettyConfig nettyConfig;
+//    @Resource NettyConfig nettyConfig;
 
 
     //关闭服务器方法
@@ -66,17 +70,25 @@ public class NettyServerListener {
 
 
     //开启及服务线程
-    public void srart(){
+    public void start(){
 
         //从配置文件(application.yml)中获取服务端监听的端口号
 
 
-        int port = nettyConfig.getPort();
+
+
+
+
+        int port = 19000;
+//        int port = nettyConfig.getPort();
 
         serverBootstrap.group(boss, work)
             .channel(NioServerSocketChannel.class)
                 .option(ChannelOption.SO_BACKLOG,100)
                 .handler(new LoggingHandler(LogLevel.INFO));
+
+
+        System.out.println("-------开始初始化Netty--------");
 
 
         try{
@@ -87,12 +99,22 @@ public class NettyServerListener {
                 @Override
                 protected void initChannel(SocketChannel socketChannel) throws Exception {
                     ChannelPipeline pipeline = socketChannel.pipeline();
+//
+//                    pipeline.addLast(new LengthFieldBasedFrameDecoder(NettyConstant.getMaxFrameLength(), 0, 2, 0, 2));
+//                    pipeline.addLast(new LengthFieldPrepender(2));
+//                    //pipeline.addLast(new ObjectCodec());
+//
 
-                    pipeline.addLast(new LengthFieldBasedFrameDecoder(NettyConstant.getMaxFrameLength(), 0, 2, 0, 2));
-                    pipeline.addLast(new LengthFieldPrepender(2));
-                    //pipeline.addLast(new ObjectCodec());
 
-                    pipeline.addLast(channelHandlerAdapter);
+
+
+                    pipeline.addLast(new IdleStateHandler(60, 80, 90, TimeUnit.SECONDS));
+//在原来的之前新增了两个解码器LineBasedFrameDecoder、StringDecoder
+                    pipeline.addLast(new LineBasedFrameDecoder(1024));
+                    pipeline.addLast(new StringDecoder());
+
+
+                    pipeline.addLast( new ServerChannelHandlerAdapter());
 
 
                 }
@@ -102,8 +124,13 @@ public class NettyServerListener {
             LOGGER.info("netty服务器[{}]端口启动监听...", port);
             ChannelFuture f = serverBootstrap.bind(port).sync();
 
+
+            LOGGER.info("-----------bind()-------------");
+
             f.channel().closeFuture().sync();
 
+
+            LOGGER.info("-----------netty-------------");
 
         }catch (InterruptedException e){
             LOGGER.info("[出现异常] 释放资源");
