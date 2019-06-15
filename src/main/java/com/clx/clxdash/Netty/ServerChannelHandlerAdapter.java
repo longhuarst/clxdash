@@ -33,7 +33,7 @@ import java.util.Set;
 
 
 //多线程共享
-//@Component
+//@Component    //不能为组件    不然会在springboot 加载的时候，调用构造函数， 该调用可能早于依赖，导致程序异常退出。
 @ChannelHandler.Sharable
 public class ServerChannelHandlerAdapter extends ChannelHandlerAdapter {
 

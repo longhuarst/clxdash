@@ -6,8 +6,13 @@ import com.clx.clxdash.jpa.UserEntity;
 import com.clx.clxdash.jpa.UserLogin;
 import net.minidev.json.JSONObject;
 import org.apache.catalina.User;
+import org.apache.shiro.SecurityUtils;
+import org.apache.shiro.authc.UsernamePasswordToken;
+import org.apache.shiro.subject.Subject;
 import org.hibernate.engine.jdbc.spi.SqlExceptionHelper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Example;
+import org.springframework.data.domain.ExampleMatcher;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.*;
 
@@ -120,41 +125,106 @@ public class UserController {
     @ResponseBody
     @RequestMapping("login")
     public String login(@RequestParam String username, @RequestParam String password){
+        // 从SecurityUtils里边创建一个 subject
+        Subject subject = SecurityUtils.getSubject();
+        // 在认证提交前准备 token（令牌）
+        UsernamePasswordToken token = new UsernamePasswordToken(username, password);
+        // 执行认证登陆
+        subject.login(token);
+        //根据权限，指定返回数据
+        //String role = userMapper.getRole(username);
 
 
+        UserEntity userEntity = new UserEntity();
+        userEntity.setUsername(username);
 
+        ExampleMatcher matcher = ExampleMatcher.matching()
+                .withMatcher("username", ExampleMatcher.GenericPropertyMatchers.startsWith())
+                .withIgnorePaths("id");  //忽略属性：是否关注。因为是基本类型，需要忽略掉
+
+
+        Example<UserEntity> example = Example.of(userEntity,matcher);
+//        messageEntity
+        List<UserEntity> user = userRepository.findAll(example);
+        String role = "";
+
+        if (user.size() == 1){
+            role = user.get(0).getLevel();
+        }else{
+
+        }
 
         JSONObject json = new JSONObject();
 
-        System.out.println("login");
-        System.out.println("username = "+username);
-        System.out.println("password = "+password);
 
-        if (username.equals("") || password.equals("")){
+        System.out.println("role="+role);
+
+        if ("user".equals(role)) {
+            //return resultMap.success().message("欢迎登陆");
+            json.put("result","success");
+        } else if ("admin".equals(role)) {
+            //return resultMap.success().message("欢迎来到管理员页面");
+            json.put("result","success");
+        }else{
             json.put("result","failed");
-            return json.toJSONString();//"failed";
         }
 
-        //查询数据库
-        List<UserEntity> userlist = userRepository.findAll();
+        return json.toJSONString();
+        //return resultMap.fail().message("权限错误！");
+//        ---------------------
+//                作者：Howie_Y
+//        来源：CSDN
+//        原文：https://blog.csdn.net/weixin_38132621/article/details/80216056
+//        版权声明：本文为博主原创文章文为博主原创文章，转载请附上博文链接！
 
-        for (UserEntity user: userlist) {
-            if (user.getUsername().equals(username) && user.getPassword().equals(password)){
-                json.put("result","success");
-                return json.toJSONString();//"success";
-            }
-        }
-
-
-
-
-
-
-
-        json.put("result","failed");
-        return json.toJSONString();//"failed";
+//
+//
+//        JSONObject json = new JSONObject();
+//
+//        System.out.println("login");
+//        System.out.println("username = "+username);
+//        System.out.println("password = "+password);
+//
+//        if (username.equals("") || password.equals("")){
+//            json.put("result","failed");
+//            return json.toJSONString();//"failed";
+//        }
+//
+//        //查询数据库
+//        List<UserEntity> userlist = userRepository.findAll();
+//
+//        for (UserEntity user: userlist) {
+//            if (user.getUsername().equals(username) && user.getPassword().equals(password)){
+//                json.put("result","success");
+//                return json.toJSONString();//"success";
+//            }
+//        }
+//
+//
+//
+//
+//
+//
+//
+//        json.put("result","failed");
+//        return json.toJSONString();//"failed";
     }
 
+
+
+
+
+
+
+
+    @RequestMapping("logout")
+    String logout(){
+        Subject subject = SecurityUtils.getSubject();
+        //注销
+        subject.logout();
+
+        return "成功注销";
+    }
 
 
 
