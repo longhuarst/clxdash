@@ -223,7 +223,8 @@ public class UserController {
         //注销
         subject.logout();
 
-        return "成功注销";
+        System.out.println("成功注销");
+        return "logout";
     }
 
 

@@ -5,8 +5,9 @@ import java.sql.Timestamp;
 import java.util.Objects;
 
 @Entity
-@Table(name = "User", schema = "clxdash", catalog = "")
-public class UserEntity {
+@Table(name = "user_controller", schema = "clxdash", catalog = "")
+@IdClass(UserControllerEntityPK.class)
+public class UserControllerEntity {
     private int id;
     private String username;
     private String password;
@@ -28,7 +29,7 @@ public class UserEntity {
         this.id = id;
     }
 
-    @Basic
+    @Id
     @Column(name = "username")
     public String getUsername() {
         return username;
@@ -48,7 +49,7 @@ public class UserEntity {
         this.password = password;
     }
 
-    @Basic
+    @Id
     @Column(name = "email")
     public String getEmail() {
         return email;
@@ -58,7 +59,7 @@ public class UserEntity {
         this.email = email;
     }
 
-    @Basic
+    @Id
     @Column(name = "phone")
     public String getPhone() {
         return phone;
@@ -122,7 +123,7 @@ public class UserEntity {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        UserEntity that = (UserEntity) o;
+        UserControllerEntity that = (UserControllerEntity) o;
         return id == that.id &&
                 Objects.equals(username, that.username) &&
                 Objects.equals(password, that.password) &&

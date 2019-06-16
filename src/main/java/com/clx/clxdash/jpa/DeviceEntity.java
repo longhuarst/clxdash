@@ -4,10 +4,11 @@ import javax.persistence.*;
 import java.util.Objects;
 
 @Entity
-@Table(name = "Device", schema = "clxdash", catalog = "")
+@Table(name = "device", schema = "clxdash", catalog = "")
 public class DeviceEntity {
     private int id;
     private String uuid;
+    private String username;
     private String type;
     private String description;
 
@@ -29,6 +30,16 @@ public class DeviceEntity {
 
     public void setUuid(String uuid) {
         this.uuid = uuid;
+    }
+
+    @Basic
+    @Column(name = "username")
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
     }
 
     @Basic
@@ -58,12 +69,13 @@ public class DeviceEntity {
         DeviceEntity that = (DeviceEntity) o;
         return id == that.id &&
                 Objects.equals(uuid, that.uuid) &&
+                Objects.equals(username, that.username) &&
                 Objects.equals(type, that.type) &&
                 Objects.equals(description, that.description);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, uuid, type, description);
+        return Objects.hash(id, uuid, username, type, description);
     }
 }
