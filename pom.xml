@@ -19,6 +19,13 @@
     </properties>
 
     <dependencies>
+
+
+
+
+
+
+
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-data-jpa</artifactId>
@@ -49,12 +56,25 @@
 
 
 
+
+
         <!-- https://mvnrepository.com/artifact/io.netty/netty-all -->
         <dependency>
             <groupId>io.netty</groupId>
             <artifactId>netty-all</artifactId>
-            <version>5.0.0.Alpha2</version>
+            <version>5.0.0.Alpha1</version>
+
+            <exclusions>
+                <exclusion>
+                    <groupId>io.reactivex</groupId>
+                    <artifactId>rxnetty</artifactId>
+                </exclusion>
+            </exclusions>
+
         </dependency>
+
+
+
 
 
         <!-- https://mvnrepository.com/artifact/org.projectlombok/lombok -->

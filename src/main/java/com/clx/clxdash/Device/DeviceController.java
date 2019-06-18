@@ -11,13 +11,24 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("device_api/")
 public class DeviceController {
 
+
+
     @Autowired
     DeviceRespository deviceRespository;
+
+
+
+    @RequestMapping("random_uuid")
+    String random_uuid(){
+        return UUID.randomUUID().toString();
+    }
+
 
     //创建一个新的设备
     @RequestMapping("create_device")
@@ -36,16 +47,25 @@ public class DeviceController {
         deviceEntity.setDescription(description);
         deviceEntity.setType(type);
         deviceEntity.setUuid(uuid);
+        deviceEntity.setUsername(username);
+
+        //deviceRespository.save(deviceEntity);
+
+
+        JSONObject json = new JSONObject();
+
 
         try {
             deviceRespository.save(deviceEntity);
 
         }catch (Exception e){
 
-            return "failed";
+           json.put("result","failed");
+            // return "failed";
+            return json.toJSONString();
         }
-
-        return "success";
+        json.put("result","success");
+        return json.toJSONString();//"success";
     }
 
 
@@ -85,33 +105,33 @@ public class DeviceController {
         JSONObject json = new JSONObject();
         json.put("result",devicelist.size());
 
-        String uuidlist="[";//="";//[] = new String[devicelist.size()];
-        String typelist="[";
-        String desclist="[";
+//        String uuidlist="[";//="";//[] = new String[devicelist.size()];
+//        String typelist="[";
+//        String desclist="[";
 
         for (int i=0;i<devicelist.size();++i){
-            //JSONObject jsonsub = new JSONObject();
-//            jsonsub.put("uuid",devicelist.get(i).getUuid());
-//            jsonsub.put("type",devicelist.get(i).getType());
-//            jsonsub.put("description",devicelist.get(i).getDescription());
-//
-//
-//            json.put(String.valueOf(i),jsonsub.toJSONString());
+            JSONObject jsonsub = new JSONObject();
+            jsonsub.put("uuid",devicelist.get(i).getUuid());
+            jsonsub.put("type",devicelist.get(i).getType());
+            jsonsub.put("description",devicelist.get(i).getDescription());
 
-            uuidlist += devicelist.get(i).getUuid() + ", ";
-            typelist += devicelist.get(i).getType() + ", ";
-            desclist += devicelist.get(i).getDescription() + ", ";
+
+            json.put(String.valueOf(i),jsonsub.toJSONString());
+
+//            uuidlist += devicelist.get(i).getUuid() + ", ";
+//            typelist += devicelist.get(i).getType() + ", ";
+//            desclist += devicelist.get(i).getDescription() + ", ";
         }
 
-        uuidlist += "]";
-        typelist += "]";
-        desclist += "]";
+//        uuidlist += "]";
+//        typelist += "]";
+//        desclist += "]";
 
 
 
-        json.put("uuid",uuidlist);
-        json.put("type",typelist);
-        json.put("description",desclist);
+//        json.put("uuid",uuidlist);
+//        json.put("type",typelist);
+//        json.put("description",desclist);
 
         return json.toJSONString();
     }

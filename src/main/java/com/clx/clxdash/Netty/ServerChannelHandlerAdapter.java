@@ -17,6 +17,12 @@ import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerAdapter;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.timeout.IdleStateEvent;
+import io.netty.buffer.ByteBuf;
+import io.netty.buffer.Unpooled;
+import io.netty.channel.ChannelHandler;
+import io.netty.channel.ChannelHandlerAdapter;
+import io.netty.channel.ChannelHandlerContext;
+import io.netty.handler.timeout.IdleStateEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -96,10 +102,11 @@ public class ServerChannelHandlerAdapter extends ChannelHandlerAdapter {
 
 
         String megstr = message.toString();
+        System.out.println(message.toString());
 
         //v1版本协议
         if(megstr.startsWith("v1/pub/")){
-//            logger.info("v1版本协议发布消息");
+            logger.info("v1版本协议发布消息");
 
 
             String body = megstr.substring("v1/pub/".length());
@@ -230,9 +237,10 @@ public class ServerChannelHandlerAdapter extends ChannelHandlerAdapter {
     }
 
 
+
     @Override
     public void channelInactive(ChannelHandlerContext ctx) throws Exception {
-        super.channelInactive(ctx);
+//        super.channelInactive(ctx);
 
         ListenTable.getInstance().remove(ctx);
     }
@@ -240,7 +248,7 @@ public class ServerChannelHandlerAdapter extends ChannelHandlerAdapter {
 
     @Override
     public void userEventTriggered(ChannelHandlerContext ctx, Object evt) throws Exception {
-        super.userEventTriggered(ctx, evt);
+//            super.userEventTriggered(ctx, evt);
 
 
 
