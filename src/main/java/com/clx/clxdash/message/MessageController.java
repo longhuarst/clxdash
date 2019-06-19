@@ -115,7 +115,10 @@ public class MessageController  {
 
             childObject.put("topic",messages.get(i).getTopic());
             childObject.put("msg",messages.get(i).getMsg());
-            childObject.put("time",messages.get(i).getTime());
+
+            System.out.println("time="+messages.get(i).getTime());
+
+            childObject.put("time",messages.get(i).getTime().toString());
 
             jsonObject.put(String.valueOf(i),childObject);
 

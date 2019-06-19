@@ -28,6 +28,9 @@ public class ShiroConfig {
         Map<String, String> filterChainDefinitionMap = new LinkedHashMap<>();
         //游客，开发权限
         filterChainDefinitionMap.put("/guest/**", "anon");
+
+        //message/get，开发权限
+        filterChainDefinitionMap.put("/message/getjsonbyuuid", "anon");
         //用户，需要角色权限 “user”
         filterChainDefinitionMap.put("/user/**", "roles[user]");
         //管理员，需要角色权限 “admin”
